@@ -1,0 +1,30 @@
+# Java specific
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE specific
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Build directories
+target/
+bin/
+out/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Operating System specific
+.DS_Store
+Thumbs.db
+
+# Project specific
+saves/
