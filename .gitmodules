@@ -1,0 +1,3 @@
+[submodule "sepia-latest"]
+	path = sepia-latest
+	url = https://github.com/true-grue/SEPIA.git
