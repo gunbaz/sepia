@@ -1,53 +1,44 @@
-# SEPIA Planlama ve Yürütme Projesi
+# SEPIA Tabanlı Planlama Projesi
 
-Bu proje, SEPIA (Strategy Engine for Programming Intelligent Agents) framework'ü kullanılarak geliştirilmiş bir planlama ve yürütme sistemi içerir. Sistem, bir oyun ortamında kaynakları verimli bir şekilde toplayan bir ajan uygulamasıdır.
+Bu proje, SEPIA (Simple Environment for Producing Intelligent Agents) framework'ü kullanılarak geliştirilmiş bir planlama sistemidir.
 
 ## Proje Yapısı
 
-- `src/agent/` - Ajan uygulaması ve SEPIA entegrasyonu
-  - `ExecutionAgent.java` - Ana ajan sınıfı
-- `src/planner/` - Planlama sistemi
-  - `Action.java` - Aksiyon tanımlamaları
-  - `Node.java` - A* algoritması düğüm yapısı
-  - `Planner.java` - A* planlama algoritması
-  - `State.java` - Durum temsili
+Proje aşağıdaki ana bileşenlerden oluşmaktadır:
+
+- `src/agent/`: Agent implementasyonları
+  - `ExecutionAgent.java`: Ana agent sınıfı
+- `src/planner/`: Planlama algoritması implementasyonları
+  - `Action.java`: Aksiyon tanımlamaları
+  - `Node.java`: Plan ağacı düğüm yapısı
+  - `Planner.java`: Ana planlama algoritması
+  - `State.java`: Durum temsili
 
 ## Kurulum
 
-1. Java 8 veya üzeri gereklidir
-2. SEPIA framework JAR dosyalarını `lib/` klasörüne yerleştirin:
-   - sepia.jar
-   - sepiaframe.jar
+1. Java JDK 8 veya üzeri gereklidir
+2. SEPIA framework'ünün kurulu olması gereklidir
+3. Projeyi klonlayın:
+   ```bash
+   git clone https://github.com/gunbaz/sepia.git
+   ```
 
-## Çalıştırma
+## Kullanım
 
-1. Projeyi derlemek için:
-```bash
-cd src
-javac -cp ".;lib/*" agent/*.java planner/*.java
-```
+1. Projeyi derleyin
+2. Planlayıcıyı çalıştırın:
+   ```java
+   java -cp . agent.ExecutionAgent
+   ```
 
-2. Uygulamayı çalıştırmak için:
-```bash
-java -cp ".;lib/*" edu.cwru.sepia.Main2 midasConfig.xml
-```
+## Katkıda Bulunma
 
-## Yapılandırma
-
-- `midasConfig.xml`: Ajan ve oyun parametreleri
-- `rc_3m5t.xml`: Harita ve birim tanımlamaları
-
-## Özellikler
-
-- A* algoritması ile kaynak toplama planlaması
-- SEPIA framework entegrasyonu
-- Kaynakları verimli toplama ve depolama
-- 100 episode test desteği
-
-## Geliştirici
-
-[Adınız]
+1. Bu depoyu forklayın
+2. Feature branch'i oluşturun (`git checkout -b feature/YeniOzellik`)
+3. Değişikliklerinizi commit edin (`git commit -am 'Yeni özellik: XYZ eklendi'`)
+4. Branch'inizi push edin (`git push origin feature/YeniOzellik`)
+5. Pull Request oluşturun
 
 ## Lisans
 
-Bu proje [lisans adı] altında lisanslanmıştır.
+Bu proje açık kaynak olarak MIT lisansı altında lisanslanmıştır.
