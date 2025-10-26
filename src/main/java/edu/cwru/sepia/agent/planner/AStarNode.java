@@ -1,112 +1,64 @@
 package edu.cwru.sepia.agent.planner;
 
-import java.util.Objects;
-
 /**
- * Encapsulates the information stored for each node in the A* search frontier.
+ * A* arama algoritmasında bir düğümü temsil eden yardımcı sınıf.
+ * Bir GameState'i ve o duruma ulaşmak için gereken ek bilgileri içerir.
  */
 public class AStarNode implements Comparable<AStarNode> {
 
-    /** The game state associated with this node. */
-    private final GameState state;
-
-    /** Cost accumulated from the start node to reach this node (g(n)). */
-    private final double pathCost;
-
-    /** Heuristic estimate of the cost from this node to the goal (h(n)). */
-    private final double heuristicCost;
-
-    /** Parent node in the search tree, used to reconstruct the resulting plan. */
-    private final AStarNode parent;
-
-    /** Action applied to the parent to produce this node. */
-    private final StripsAction generatingAction;
+    private GameState gameState;
+    private double costG; // Başlangıçtan bu düğüme olan gerçek maliyet (g(n))
+    private double heuristicH; // Bu düğümden hedefe olan tahmini maliyet (h(n))
+    private AStarNode parent; // Bu düğüme hangi düğümden gelindiği
+    private StripsAction action; // Parent'tan bu düğüme hangi eylemle gelindiği
 
     /**
-     * Constructs a new {@code AStarNode} instance.
-     *
-     * @param state           the game state associated with this node
-     * @param pathCost        accumulated path cost from the start state
-     * @param heuristicCost   estimated remaining cost to the goal
-     * @param parent          parent node from which this node was generated
-     * @param generatingAction action applied to the parent to reach this state
+     * AStarNode oluşturur.
+     * @param gameState Bu düğümün temsil ettiği durum.
+     * @param costG Başlangıçtan bu düğüme maliyet.
+     * @param heuristicH Bu düğümden hedefe tahmini maliyet.
+     * @param parent Bu düğümün ebeveyni.
+     * @param action Ebeveynden bu düğüme getiren eylem.
      */
-    public AStarNode(GameState state,
-                     double pathCost,
-                     double heuristicCost,
-                     AStarNode parent,
-                     StripsAction generatingAction) {
-        this.state = state;
-        this.pathCost = pathCost;
-        this.heuristicCost = heuristicCost;
+    public AStarNode(GameState gameState, double costG, double heuristicH, AStarNode parent, StripsAction action) {
+        this.gameState = gameState;
+        this.costG = costG;
+        this.heuristicH = heuristicH;
         this.parent = parent;
-        this.generatingAction = generatingAction;
+        this.action = action;
     }
 
     /**
-     * @return the underlying game state represented by this node
+     * Toplam tahmini maliyeti (f(n) = g(n) + h(n)) döndürür.
+     * A* bu değere göre en iyi düğümü seçer.
+     * @return Toplam tahmini maliyet.
      */
-    public GameState getState() {
-        return state;
+    public double getTotalCostF() {
+        return costG + heuristicH;
     }
 
-    /**
-     * @return the path cost (g(n))
-     */
-    public double getPathCost() {
-        return pathCost;
+    public GameState getGameState() {
+        return gameState;
     }
 
-    /**
-     * @return the heuristic cost (h(n))
-     */
-    public double getHeuristicCost() {
-        return heuristicCost;
+    public double getCostG() {
+        return costG;
     }
 
-    /**
-     * @return the parent node
-     */
     public AStarNode getParent() {
         return parent;
     }
 
-    /**
-     * @return the action that generated this node
-     */
-    public StripsAction getGeneratingAction() {
-        return generatingAction;
+    public StripsAction getAction() {
+        return action;
     }
 
     /**
-     * Computes the total estimated cost f(n) = g(n) + h(n).
-     *
-     * @return the total estimated cost
+     * Düğümleri f(n) değerine göre karşılaştırır.
+     * Bu, PriorityQueue'nin en düşük maliyetli düğümü en üste koymasını sağlar.
      */
-    public double getTotalCost() {
-        return pathCost + heuristicCost;
-    }
-
     @Override
     public int compareTo(AStarNode other) {
-        return Double.compare(getTotalCost(), other.getTotalCost());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof AStarNode)) {
-            return false;
-        }
-        AStarNode that = (AStarNode) o;
-        // Nodes are considered equal if they reference the same game state.
-        return Objects.equals(state, that.state);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(state);
+        return Double.compare(this.getTotalCostF(), other.getTotalCostF());
     }
 }

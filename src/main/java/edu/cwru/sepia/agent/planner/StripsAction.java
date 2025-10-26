@@ -1,27 +1,31 @@
 package edu.cwru.sepia.agent.planner;
 
 /**
- * Represents an abstract STRIPS-style action that can be applied to a {@link GameState}.
- *
- * <p>Implementations of this interface encapsulate the preconditions and effects required to
- * manipulate a {@code GameState}. Examples include moving to a resource node, harvesting gold or wood,
- * and depositing resources at the town hall.</p>
+ * Bu arayüz, planlayıcının kullanabileceği tüm STRIPS-benzeri eylemler için
+ * bir şablon tanımlar. Her eylem bu arayüzü uygulamalıdır.
  */
 public interface StripsAction {
 
     /**
-     * Determines whether this action can be performed in the provided state.
-     *
-     * @param state the state being evaluated
-     * @return {@code true} if the action's preconditions are met; {@code false} otherwise
+     * Bir eylemin belirli bir durumda uygulanabilir olup olmadığını kontrol eder.
+     * @param state Eylemin uygulanacağı mevcut durum.
+     * @return Eylemin önkoşulları karşılanıyorsa true, aksi halde false.
      */
     boolean arePreconditionsMet(GameState state);
 
     /**
-     * Applies the effects of this action to the provided state and returns the successor state.
-     *
-     * @param state the state to modify
-     * @return the new {@link GameState} resulting from applying this action
+     * Eylemi mevcut duruma uygular ve sonuçta ortaya çıkan yeni durumu döndürür.
+     * DİKKAT: Bu metod, parametre olarak gelen 'state' nesnesini DEĞİŞTİRMEMELİ,
+     * bunun yerine eylemin etkilerini içeren YENİ bir GameState nesnesi oluşturmalıdır.
+     * @param state Eylemin uygulanacağı mevcut durum.
+     * @return Eylem uygulandıktan sonraki yeni durum.
      */
     GameState apply(GameState state);
+    
+    /**
+     * Bu eylemi gerçekleştirmenin maliyetini döndürür.
+     * A* algoritması bu maliyeti en düşük maliyetli yolu bulmak için kullanır.
+     * @return Eylemin maliyeti (örn: hareket için mesafe).
+     */
+    double getCost();
 }
