@@ -1,16 +1,21 @@
 package edu.cwru.sepia.agent.planner;
 
 /**
- * DepositAction, bir köylünün taşıdığı kaynağı belediye binasına
- * teslim etmesini temsil eden STRIPS eylemidir.
+ * DepositAction:
+ * Köylü TownHall üzerinde duruyorsa ve elinde kaynak varsa,
+ * bu kaynağı kasaya bırakır.
+ *
+ * Etkiler:
+ * - peasantIsCarrying = false
+ * - Eğer altın taşıyorsa collectedGold += 100
+ *   değilse collectedWood += 100
  */
 public class DepositAction implements StripsAction {
 
     @Override
     public boolean arePreconditionsMet(GameState state) {
-        // Önkoşullar:
-        // 1. Köylü, belediye binasının yanında olmalı.
-        // 2. Köylünün elinde bir şey olmalı.
+        // 1. Köylü TownHall koordinatında olmalı
+        // 2. Köylü bir şey taşıyor olmalı
         return state.peasantX == GameState.TOWN_HALL_X &&
                state.peasantY == GameState.TOWN_HALL_Y &&
                state.peasantIsCarrying;
@@ -18,26 +23,30 @@ public class DepositAction implements StripsAction {
 
     @Override
     public GameState apply(GameState state) {
-        // Yeni bir durum kopyası oluştur.
-        GameState newGameState = new GameState(state);
+        GameState newState = new GameState(state);
 
-        // Etkiler:
-        // 1. Köylünün elleri artık boş.
-        newGameState.peasantIsCarrying = false;
-        
-        // 2. Taşıdığı kaynağa göre toplam kaynak miktarını 100 artır.
-        if (newGameState.peasantCarriesGold) {
-            newGameState.collectedGold += 100;
+        // Artık eller boş
+        newState.peasantIsCarrying = false;
+
+        // Ne taşıyorsa o kaydı kasaya ekle
+        if (state.peasantCarriesGold) {
+            newState.collectedGold += 100;
         } else {
-            newGameState.collectedWood += 100;
+            newState.collectedWood += 100;
         }
 
-        return newGameState;
+        // Kaynağı bıraktıktan sonra eller boş, taşıdığı şeyin türü resetlenebilir
+        // ama peasantCarriesGold bayrağını sıfırlamak zorunda değiliz.
+        // Bu bayrak anlamını "şu anda taşıdığı şey altın mıydı?" gibi kullanıyoruz.
+        // İstersen güvenli olsun diye false yapabiliriz, ama gerekmiyor.
+        // newState.peasantCarriesGold = false;
+
+        return newState;
     }
 
     @Override
     public double getCost() {
-        // Bu eylem birim zaman alır.
+        // Depo etmek tek zaman adımı.
         return 1.0;
     }
 }

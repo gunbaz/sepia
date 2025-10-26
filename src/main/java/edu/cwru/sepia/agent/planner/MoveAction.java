@@ -1,39 +1,53 @@
 package edu.cwru.sepia.agent.planner;
 
 /**
- * MoveAction, bir köylünün haritadaki bir (x, y) konumundan
- * hedef bir (x, y) konumuna gitmesini temsil eden STRIPS eylemidir.
+ * MoveAction:
+ * Köylünün (peasant) bulunduğu (currentX,currentY) konumundan
+ * hedef (targetX,targetY) konumuna "gitmesini" soyutlar.
+ *
+ * Bu aksiyon state içinde sadece köylünün koordinatlarını günceller.
+ * Hareket süresinin cost'u olarak Chebyshev distance (max(dx,dy)) kullanıyoruz.
+ * Bu, SEPIA’daki diagonal hareket modeline daha yakın bir alt bound’dur.
  */
 public class MoveAction implements StripsAction {
 
-    public int currentX, currentY;
-    public int targetX, targetY;
+    public final int startX;
+    public final int startY;
+    public final int targetX;
+    public final int targetY;
 
-    /**
-     * MoveAction oluşturur.
-     */
-    public MoveAction(int currentX, int currentY, int targetX, int targetY) {
-        this.currentX = currentX;
-        this.currentY = currentY;
+    public MoveAction(int startX, int startY, int targetX, int targetY) {
+        this.startX = startX;
+        this.startY = startY;
         this.targetX = targetX;
         this.targetY = targetY;
     }
 
     @Override
     public boolean arePreconditionsMet(GameState state) {
-        return state.peasantX != targetX || state.peasantY != targetY;
+        // Mantık:
+        // - Zaten hedefteysen bu hareket gereksiz.
+        // - Aksi halde yapılabilir.
+        return !(state.peasantX == targetX && state.peasantY == targetY);
     }
 
     @Override
     public GameState apply(GameState state) {
-        GameState newGameState = new GameState(state);
-        newGameState.peasantX = targetX;
-        newGameState.peasantY = targetY;
-        return newGameState;
+        // Yeni bir kopya oluşturuyoruz, orijinali bozmuyoruz.
+        GameState newState = new GameState(state);
+
+        // Köylüyü yeni koordinata "ışınla" (planlama soyutlaması).
+        newState.peasantX = targetX;
+        newState.peasantY = targetY;
+
+        return newState;
     }
 
     @Override
     public double getCost() {
-        return Math.max(Math.abs(targetX - currentX), Math.abs(targetY - currentY));
+        int dx = Math.abs(targetX - startX);
+        int dy = Math.abs(targetY - startY);
+        // Chebyshev distance = max(dx,dy)
+        return Math.max(dx, dy);
     }
 }

@@ -1,0 +1,88 @@
+# STRIPS Specification – Programming Assignment 1
+# Author: Furkan Günbaz
+# Student ID: 22XXXXXX
+# Date: 26/10/2025
+
+----------------------------------------------------
+DOMAIN: Resource Collection (RC1)
+----------------------------------------------------
+
+PREDICATES:
+  HasWood(x)         – Köylü x odun taşıyor
+  HasGold(x)         – Köylü x altın taşıyor
+  At(x, l)           – Köylü x konum l’de
+  ResourceAt(l, t)   – Konum l’de t tipinde kaynak var (WOOD or GOLD)
+  TownhallAt(l)      – TownHall konum l’de
+  Empty(x)           – Köylü x hiçbir kaynak taşımıyor
+  Collected(t, n)    – t tipinde toplam n kaynak toplanmış
+
+----------------------------------------------------
+INITIAL STATE:
+  - 1 Peasant mevcut
+  - TownHall belirli bir koordinatta
+  - Haritada en az bir altın madeni ve bir orman mevcut
+  - Peasant boş durumda (Empty)
+  - Collected(GOLD, 0), Collected(WOOD, 0)
+
+----------------------------------------------------
+GOAL STATE:
+  Collected(GOLD, G) ∧ Collected(WOOD, W)
+  where G ≥ 200, W ≥ 200
+  (ikinci deneyde G ≥ 1000, W ≥ 1000)
+
+----------------------------------------------------
+ACTIONS:
+1. Move(p, l1, l2)
+   Preconditions:
+     At(p, l1)
+     Adjacent(l1, l2)
+   Effects:
+     ¬At(p, l1)
+     At(p, l2)
+
+2. Harvest(p, r)
+   Preconditions:
+     At(p, l)
+     ResourceAt(l, t)
+     Empty(p)
+   Effects:
+     ¬Empty(p)
+     Has(t, p)
+
+3. Deposit(p, t)
+   Preconditions:
+     At(p, l)
+     TownhallAt(l)
+     Has(t, p)
+   Effects:
+     Empty(p)
+     Collected(t, n+1)
+
+----------------------------------------------------
+COST MODEL:
+  - Move = 1
+  - Harvest = 1
+  - Deposit = 1
+  Total cost = stepCount (ölçülen toplam tur sayısı)
+
+----------------------------------------------------
+PLANNER:
+  A* Search Algorithm
+  - Node cost: g(n) = accumulated cost
+  - Heuristic: h(n) = remaining (goal – collected resources)
+  - f(n) = g(n) + h(n)
+
+----------------------------------------------------
+EXECUTION:
+  - RCAgent uses the generated plan sequentially.
+  - Actions are translated to SEPIA commands:
+      Move → Action.createCompoundMove()
+      Harvest → Action.createCompoundGather()
+      Deposit → Action.createCompoundDeposit()
+  - Simulation runs until goal state satisfied.
+
+----------------------------------------------------
+EXTENSION (RC2):
+  - BuildPeasantAction eklenmiştir.
+  - GameStateMulti çoklu ajan (peasant) durumunu temsil eder.
+  - Eylemler paralel olarak yürütülür (Move1, Harvest1, Deposit1).

@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run SEPIA with RCAgent",
+            "request": "launch",
+
+            "mainClass": "edu.cwru.sepia.Main",
+
+            "classPaths": [
+                "target/sepia-1.0-SNAPSHOT.jar",
+                "lib/Sepia.jar"
+            ],
+
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

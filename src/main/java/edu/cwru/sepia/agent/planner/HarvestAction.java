@@ -3,12 +3,20 @@ package edu.cwru.sepia.agent.planner;
 import edu.cwru.sepia.agent.planner.GameState.ResourceInfo;
 
 /**
- * HarvestAction, bir köylünün bitişiğindeki bir kaynak düğümünden
- * 100 birim kaynak toplamasını temsil eden STRIPS eylemidir.
+ * HarvestAction:
+ * Köylü bulunduğu kaynaktan (maden ya da orman) 100 birim toplar
+ * ve eline alır.
+ *
+ * Etkiler:
+ * - peasantIsCarrying = true
+ * - peasantCarriesGold (kaynağa göre)
+ * - kaynağın amountRemaining -= 100
+ *
+ * Not: Burada sadece 100'lük paketlerle çalışıyoruz.
  */
 public class HarvestAction implements StripsAction {
 
-    public ResourceInfo resource;
+    public final ResourceInfo resource; // hedef kaynak düğümü
 
     public HarvestAction(ResourceInfo resource) {
         this.resource = resource;
@@ -16,6 +24,10 @@ public class HarvestAction implements StripsAction {
 
     @Override
     public boolean arePreconditionsMet(GameState state) {
+        // Önkoşullar:
+        // 1. Köylü bu kaynağın üstünde olmalı
+        // 2. Köylünün elleri boş olmalı (aynı anda iki şey taşıyamıyor)
+        // 3. Bu kaynaktan en az 100 birim kalmış olmalı
         return state.peasantX == resource.x &&
                state.peasantY == resource.y &&
                !state.peasantIsCarrying &&
@@ -24,21 +36,30 @@ public class HarvestAction implements StripsAction {
 
     @Override
     public GameState apply(GameState state) {
-        GameState newGameState = new GameState(state);
-        newGameState.peasantIsCarrying = true;
-        newGameState.peasantCarriesGold = resource.isGoldMine;
+        GameState newState = new GameState(state);
 
-        for (ResourceInfo res : newGameState.resources) {
-            if (res.x == this.resource.x && res.y == this.resource.y) {
-                res.amountRemaining -= 100;
+        // Köylü artık bir şey taşıyor
+        newState.peasantIsCarrying = true;
+
+        // Neyi taşıyor? Altın mı odun mu?
+        newState.peasantCarriesGold = resource.isGoldMine;
+
+        // Kaynağın stoğunu azalt
+        for (GameState.ResourceInfo r : newState.resources) {
+            if (r.x == resource.x &&
+                r.y == resource.y &&
+                r.resourceID == resource.resourceID) {
+                r.amountRemaining -= 100;
                 break;
             }
         }
-        return newGameState;
+
+        return newState;
     }
 
     @Override
     public double getCost() {
+        // Hasat tek zaman adımı (sabit 1)
         return 1.0;
     }
 }
